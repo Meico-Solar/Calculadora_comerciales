@@ -119,6 +119,30 @@
   }
   .btn-print:hover { background: var(--accent-subtle); }
 
+  /* Arrangements list */
+  .arreglos-list { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
+  .arreglo-row {
+    display: flex; align-items: flex-end; gap: 12px;
+    background: var(--accent-subtle); border-radius: 6px; padding: 10px 12px;
+  }
+  .arreglo-row .arr-num { font-size: 11px; font-weight: 700; color: var(--blue); min-width: 64px; padding-bottom: 8px; }
+  .arreglo-row .arr-field { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .arreglo-row .arr-field label { font-size: 10px; font-weight: 600; color: var(--gray); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .arreglo-row .arr-field input { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 5px; font-size: 13px; width: 100%; }
+  .arreglo-row .arr-field input:focus { outline: none; border-color: var(--blue); }
+  .btn-remove-arr {
+    border: none; background: #e8e8ee; color: var(--gray); width: 30px; height: 34px;
+    border-radius: 5px; font-size: 18px; line-height: 1; cursor: pointer; flex-shrink: 0;
+  }
+  .btn-remove-arr:hover:not(:disabled) { background: #f3d0d0; color: #b00; }
+  .btn-remove-arr:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-add-arr {
+    grid-column: 1 / -1; margin-top: 4px; padding: 9px; background: var(--white);
+    color: var(--blue); border: 1.5px dashed var(--blue); border-radius: 6px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .btn-add-arr:hover { background: var(--accent-subtle); }
+
   /* ============ REPORT (print-ready) ============ */
   .report {
     display: none;
@@ -386,14 +410,6 @@
     <div class="section-divider">Datos del Proyecto</div>
 
     <div class="input-group">
-      <label>Paneles por Arreglo</label>
-      <input type="number" id="paneles" value="14" min="1">
-    </div>
-    <div class="input-group">
-      <label>N&uacute;mero de Arreglos</label>
-      <input type="number" id="arreglos" value="4" min="1">
-    </div>
-    <div class="input-group">
       <label>Largo del Panel (mm)</label>
       <input type="number" id="largo" value="2382" min="100">
     </div>
@@ -419,6 +435,10 @@
         <option value="concreto">Concreto (Tri&aacute;ngulo ajustable)</option>
       </select>
     </div>
+
+    <div class="section-divider">Arreglos</div>
+    <div id="arreglosList" class="arreglos-list"></div>
+    <button type="button" class="btn-add-arr" onclick="addArreglo()">+ Agregar arreglo</button>
 
     <button class="btn-generate" onclick="generateReport()">GENERAR REPORTE</button>
     <button class="btn-print" id="btnPrint" onclick="window.print()">IMPRIMIR / GUARDAR PDF (Ctrl + P)</button>
@@ -488,6 +508,45 @@ function lineBom({ paneles, arreglos, largo, ancho, posicion, techo }) {
   };
 }
 // ===== END PURE BOM LOGIC =====
+
+// ===== ARRANGEMENT LIST (UI) =====
+function makeArregloRow(paneles, arreglos) {
+  const row = document.createElement('div');
+  row.className = 'arreglo-row';
+  row.innerHTML =
+    '<span class="arr-num"></span>' +
+    '<div class="arr-field"><label>Paneles por arreglo</label>' +
+    '<input type="number" class="arr-paneles" value="' + paneles + '" min="1"></div>' +
+    '<div class="arr-field"><label>N.º de arreglos</label>' +
+    '<input type="number" class="arr-arreglos" value="' + arreglos + '" min="1"></div>' +
+    '<button type="button" class="btn-remove-arr" onclick="removeArreglo(this)">&times;</button>';
+  return row;
+}
+function addArreglo(paneles = 14, arreglos = 4) {
+  document.getElementById('arreglosList').appendChild(makeArregloRow(paneles, arreglos));
+  renumberArreglos();
+}
+function removeArreglo(btn) {
+  const list = document.getElementById('arreglosList');
+  if (list.children.length <= 1) return;
+  btn.closest('.arreglo-row').remove();
+  renumberArreglos();
+}
+function renumberArreglos() {
+  const rows = document.querySelectorAll('#arreglosList .arreglo-row');
+  rows.forEach((row, i) => {
+    row.querySelector('.arr-num').textContent = 'Arreglo ' + (i + 1);
+    row.querySelector('.btn-remove-arr').disabled = rows.length === 1;
+  });
+}
+function readArreglos() {
+  const rows = document.querySelectorAll('#arreglosList .arreglo-row');
+  return Array.from(rows).map(row => ({
+    paneles: parseInt(row.querySelector('.arr-paneles').value) || 0,
+    arreglos: parseInt(row.querySelector('.arr-arreglos').value) || 0,
+  }));
+}
+// ===== END ARRANGEMENT LIST =====
 
 const PIECES = {
   rail: {
@@ -654,22 +713,28 @@ const ROOF_TYPES = {
 
 // ============ CALCULATION ENGINE ============
 function calculate() {
-  const paneles = parseInt(document.getElementById('paneles').value) || 0;
-  const arreglos = parseInt(document.getElementById('arreglos').value) || 0;
   const largo = parseInt(document.getElementById('largo').value) || 0;
   const ancho = parseInt(document.getElementById('ancho').value) || 0;
   const posicion = document.getElementById('posicion').value;
   const techo = document.getElementById('techo').value;
 
-  const b = lineBom({ paneles, arreglos, largo, ancho, posicion, techo });
+  const totals = { rail: 0, splice: 0, midClamp: 0, endClamp: 0, grounding: 0, triangleKit: 0, fixing: 0 };
+  const arreglosInfo = [];
+
+  readArreglos().forEach(({ paneles, arreglos }) => {
+    const b = lineBom({ paneles, arreglos, largo, ancho, posicion, techo });
+    for (const k in totals) totals[k] += b[k];
+    arreglosInfo.push({ paneles, arreglos, subtotal: paneles * arreglos });
+  });
+
   const order = ['rail', 'splice', 'midClamp', 'endClamp', 'grounding'];
   if (techo === 'concreto') order.push('triangleKit');
   order.push('fixing');
 
   return {
-    totalPaneles: paneles * arreglos,
-    arreglos, posicion, techo,
-    bom: order.map(key => ({ key, qty: b[key] })),
+    arreglos: arreglosInfo,
+    posicion, techo,
+    bom: order.map(key => ({ key, qty: totals[key] })),
   };
 }
 
@@ -685,12 +750,16 @@ function generateReport() {
   const fecha = fechaInput ? new Date(fechaInput + 'T12:00:00').toLocaleDateString('es-ES') : new Date().toLocaleDateString('es-ES');
 
   // Info bar - all project + client info in one clean row
+  const panelesHTML = data.arreglos
+    .map(a => `${a.subtotal} (${a.arreglos} arr. × ${a.paneles})`)
+    .join('<br>');
+
   document.getElementById('infoBar').innerHTML = `
     <div class="item"><div class="item-label">Cliente</div><div class="item-value">${cliente}</div></div>
     <div class="item"><div class="item-label">Dirección</div><div class="item-value">${direccion}</div></div>
     <div class="item"><div class="item-label">Ciudad</div><div class="item-value">${ciudad}</div></div>
     <div class="item"><div class="item-label">Fecha</div><div class="item-value">${fecha}</div></div>
-    <div class="item"><div class="item-label">Paneles</div><div class="item-value">${data.totalPaneles} (${data.arreglos} arr. × ${document.getElementById('paneles').value})</div></div>
+    <div class="item"><div class="item-label">Paneles</div><div class="item-value">${panelesHTML}</div></div>
     <div class="item"><div class="item-label">Techo</div><div class="item-value">${roofType.name}</div></div>
     <div class="item"><div class="item-label">Posición</div><div class="item-value">${data.posicion === 'portrait' ? 'Portrait' : 'Landscape'}</div></div>
   `;
@@ -749,6 +818,7 @@ function generateReport() {
 
 // Set today's date
 document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+addArreglo(14, 4);
 </script>
 </body>
 </html>
