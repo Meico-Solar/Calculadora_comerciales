@@ -258,13 +258,15 @@
     letter-spacing: 0.4px;
     font-weight: 600;
   }
-  .bom-table th:last-child { text-align: center; width: 60px; }
+  .bom-table th:nth-child(3), .bom-table th:last-child { text-align: center; width: 54px; }
+  .bom-table .th-note { display: block; font-size: 7.5px; font-weight: 400; opacity: 0.75; letter-spacing: 0; text-transform: none; margin-top: 1px; }
   .bom-table td {
     padding: 8px 10px;
     border-bottom: 1px solid #eee;
     vertical-align: top;
   }
   .bom-table td:first-child { color: var(--gray-light); font-size: 9px; width: 28px; text-align: center; }
+  .bom-table td:nth-child(3) { text-align: center; color: var(--gray); }
   .bom-table td:last-child { text-align: center; font-weight: 700; color: var(--dark); }
   .bom-table tr:hover { background: var(--accent-subtle); }
   .bom-table .piece-name { font-weight: 600; color: var(--dark); font-size: 10.5px; }
@@ -322,6 +324,17 @@
     line-height: 1.5;
   }
   .tech-card-info .specs strong { color: var(--text); font-weight: 600; }
+
+  /* Disclaimer */
+  .report-disclaimer {
+    padding: 10px 28px;
+    background: #fbfbfd;
+    border-top: 1px solid var(--border);
+    font-size: 8.5px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .report-disclaimer strong { color: var(--dark); }
 
   /* Footer */
   .report-footer {
@@ -465,7 +478,7 @@
       <div class="section-title">Lista de Materiales</div>
       <table class="bom-table">
         <thead>
-          <tr><th>#</th><th>Componente</th><th>Cant.</th></tr>
+          <tr><th>#</th><th>Componente</th><th>Cant.</th><th>Recomendado<span class="th-note">+5%</span></th></tr>
         </thead>
         <tbody id="bomBody"></tbody>
       </table>
@@ -478,9 +491,13 @@
     </div>
   </div>
 
+  <div class="report-disclaimer">
+    <strong>Aviso importante:</strong> Esta es una sugerencia de materiales basada en la informaci&oacute;n b&aacute;sica compartida sobre el proyecto. Meico Solar no realiza el dise&ntilde;o estructural del proyecto. Estas cantidades deben ser revisadas, confirmadas y validadas por el ingeniero responsable del cliente.
+  </div>
+
   <div class="report-footer">
     <span><span class="brand">Meico Solar</span> &mdash; www.meicosolar.com</span>
-    <span>Las cantidades son estimadas seg&uacute;n la configuraci&oacute;n del proyecto.</span>
+    <span>Estructuras de montaje solar</span>
   </div>
 </div>
 
@@ -767,9 +784,11 @@ function generateReport() {
   // BOM table
   let bomHTML = '';
   let totalPiezas = 0;
+  let totalRecomendado = 0;
   data.bom.forEach((item, i) => {
     const piece = item.key === 'fixing' ? roofType.piece : PIECES[item.key];
     const isFixing = item.key === 'fixing' || item.key === 'triangleKit';
+    const recomendado = Math.ceil(item.qty * 1.05);
     bomHTML += `
       <tr class="${isFixing ? 'fixing-row' : ''}">
         <td>${i + 1}</td>
@@ -778,9 +797,11 @@ function generateReport() {
           <div class="piece-desc">${piece.fullName}</div>
         </td>
         <td>${item.qty.toLocaleString()}</td>
+        <td>${recomendado.toLocaleString()}</td>
       </tr>
     `;
     totalPiezas += item.qty;
+    totalRecomendado += recomendado;
   });
   document.getElementById('bomBody').innerHTML = bomHTML;
 
@@ -788,6 +809,7 @@ function generateReport() {
   document.getElementById('bomSummary').innerHTML = `
     <div class="row"><span class="label">Componentes distintos</span><span class="value">${data.bom.length}</span></div>
     <div class="row"><span class="label">Total piezas</span><span class="value">${totalPiezas.toLocaleString()}</span></div>
+    <div class="row"><span class="label">Total recomendado (+5%)</span><span class="value">${totalRecomendado.toLocaleString()}</span></div>
   `;
 
   // Tech cards
