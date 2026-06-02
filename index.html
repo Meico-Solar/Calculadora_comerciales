@@ -466,7 +466,28 @@
 
 <script>
 // ============ CATALOG DATA ============
+// ===== PURE BOM LOGIC (testable, no DOM) =====
 const RAIL_LENGTH = 4700; // mm
+
+// Computes component quantities for ONE arrangement line.
+// Pure: no DOM access, no globals besides RAIL_LENGTH. Formula unchanged.
+function lineBom({ paneles, arreglos, largo, ancho, posicion, techo }) {
+  const totalPaneles = paneles * arreglos;
+  const dim = posicion === 'portrait' ? ancho : largo;
+  const totalLargo = dim * totalPaneles;
+  const rieles = Math.ceil((totalLargo / RAIL_LENGTH) * 2);
+  const fixingQty = Math.ceil((paneles * ancho / 1000 / 1.7)) * 2 * arreglos;
+  return {
+    rail: rieles,
+    splice: rieles - 1,
+    midClamp: (totalPaneles - 1) * 2,
+    endClamp: arreglos * 4,
+    grounding: arreglos * 2,
+    triangleKit: techo === 'concreto' ? 2 * fixingQty : 0,
+    fixing: fixingQty,
+  };
+}
+// ===== END PURE BOM LOGIC =====
 
 const PIECES = {
   rail: {
@@ -640,35 +661,15 @@ function calculate() {
   const posicion = document.getElementById('posicion').value;
   const techo = document.getElementById('techo').value;
 
-  const totalPaneles = paneles * arreglos;
-  const dim = posicion === 'portrait' ? ancho : largo;
-  const totalLargo = dim * totalPaneles;
-
-  // BOM calculations (matching Excel formulas exactly)
-  const rieles = Math.ceil((totalLargo / RAIL_LENGTH) * 2);
-  const conectores = rieles - 1;
-  const midClamps = (totalPaneles - 1) * 2;
-  const endClamps = arreglos * 4;
-  const grounding = arreglos * 2;
-
-  // Fixing pieces based on roof type
-  const fixingQty = Math.ceil((paneles * ancho / 1000 / 1.7)) * 2 * arreglos;
-
-  // Triangle kit only for concrete
-  const triangleKitQty = techo === 'concreto' ? 2 * fixingQty : 0;
+  const b = lineBom({ paneles, arreglos, largo, ancho, posicion, techo });
+  const order = ['rail', 'splice', 'midClamp', 'endClamp', 'grounding'];
+  if (techo === 'concreto') order.push('triangleKit');
+  order.push('fixing');
 
   return {
-    totalPaneles, totalLargo,
+    totalPaneles: paneles * arreglos,
     arreglos, posicion, techo,
-    bom: [
-      { key: 'rail', qty: rieles },
-      { key: 'splice', qty: conectores },
-      { key: 'midClamp', qty: midClamps },
-      { key: 'endClamp', qty: endClamps },
-      { key: 'grounding', qty: grounding },
-      ...(techo === 'concreto' ? [{ key: 'triangleKit', qty: triangleKitQty }] : []),
-      { key: 'fixing', qty: fixingQty },
-    ]
+    bom: order.map(key => ({ key, qty: b[key] })),
   };
 }
 
