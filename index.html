@@ -436,9 +436,9 @@
       </select>
     </div>
 
-    <div class="section-divider">Arreglos</div>
+    <div class="section-divider">Secciones</div>
     <div id="arreglosList" class="arreglos-list"></div>
-    <button type="button" class="btn-add-arr" onclick="addArreglo()">+ Agregar arreglo</button>
+    <button type="button" class="btn-add-arr" onclick="addArreglo()">+ Agregar sección</button>
 
     <button class="btn-generate" onclick="generateReport()">GENERAR REPORTE</button>
     <button class="btn-print" id="btnPrint" onclick="window.print()">IMPRIMIR / GUARDAR PDF (Ctrl + P)</button>
@@ -535,7 +535,7 @@ function removeArreglo(btn) {
 function renumberArreglos() {
   const rows = document.querySelectorAll('#arreglosList .arreglo-row');
   rows.forEach((row, i) => {
-    row.querySelector('.arr-num').textContent = 'Arreglo ' + (i + 1);
+    row.querySelector('.arr-num').textContent = 'Sección ' + (i + 1);
     row.querySelector('.btn-remove-arr').disabled = rows.length === 1;
   });
 }
