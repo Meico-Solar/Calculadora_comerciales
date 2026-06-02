@@ -129,16 +129,15 @@ or invented.
 The tool currently calculates 12 component slots (6 fixed pieces + 6 roof-type
 fixings). These map directly to products 1–9, 11, 12, 13 above.
 
-**Two products need a decision (open question for the user):**
-- **#10 Self-Lock** — an *alternative* clamp to the standard Mid/End clamps. The
-  tool does not currently calculate it as its own line. Default: keep its real data
-  ready but do **not** add a new BOM row (no calculation change in this task).
-- **#12 Estructura Ajustable para Concreto** overlaps with **#7 Triángulo Ajustable
-  15–30°**. The "concreto" roof type already uses #7. Default: use #7 for the
-  concrete roof type; treat #12 as the same product family (no separate row).
+**Decisions (confirmed by user 2026-06-02):**
+- **#10 Self-Lock** — do **not** add a new BOM row. No calculation change.
+- **Keep every existing option and piece exactly as is** — do not add, remove,
+  merge, or rename any roof type or component. The #12 / #7 overlap is left
+  untouched: whatever the tool currently does stays.
 
 This task changes **only product descriptions/specs and how they display** — it does
-**not** change the calculation formulas or which pieces are counted.
+**not** change the calculation formulas, the roof-type options, or which pieces are
+counted. Every existing option remains exactly as it is today.
 
 ## Out of scope (not in this task)
 
