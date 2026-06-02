@@ -371,10 +371,6 @@
       <input type="text" id="cliente" placeholder="Nombre del cliente">
     </div>
     <div class="input-group">
-      <label>NIT</label>
-      <input type="text" id="nit" placeholder="NIT del cliente">
-    </div>
-    <div class="input-group">
       <label>Direcci&oacute;n</label>
       <input type="text" id="direccion" placeholder="Direcci&oacute;n del proyecto">
     </div>
@@ -682,7 +678,6 @@ function generateReport() {
   const techo = document.getElementById('techo').value;
   const roofType = ROOF_TYPES[techo];
   const cliente = document.getElementById('cliente').value || '—';
-  const nit = document.getElementById('nit').value || '—';
   const direccion = document.getElementById('direccion').value || '—';
   const ciudad = document.getElementById('ciudad').value || '—';
   const fechaInput = document.getElementById('fecha').value;
@@ -691,7 +686,6 @@ function generateReport() {
   // Info bar - all project + client info in one clean row
   document.getElementById('infoBar').innerHTML = `
     <div class="item"><div class="item-label">Cliente</div><div class="item-value">${cliente}</div></div>
-    <div class="item"><div class="item-label">NIT</div><div class="item-value">${nit}</div></div>
     <div class="item"><div class="item-label">Dirección</div><div class="item-value">${direccion}</div></div>
     <div class="item"><div class="item-label">Ciudad</div><div class="item-value">${ciudad}</div></div>
     <div class="item"><div class="item-label">Fecha</div><div class="item-value">${fecha}</div></div>
