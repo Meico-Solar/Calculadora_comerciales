@@ -208,6 +208,7 @@
     border-right: 1px solid var(--border);
   }
   .info-bar .item:last-child { border-right: none; }
+  .info-bar .item--wide { grid-column: span 2; }
   .info-bar .item-label {
     font-size: 9px;
     font-weight: 700;
@@ -803,11 +804,10 @@ function generateReport() {
 
   document.getElementById('infoBar').innerHTML = `
     <div class="item"><div class="item-label">Cliente</div><div class="item-value">${cliente}</div></div>
-    <div class="item"><div class="item-label">Dirección</div><div class="item-value">${direccion}</div></div>
-    <div class="item"><div class="item-label">Ciudad</div><div class="item-value">${ciudad}</div></div>
+    <div class="item"><div class="item-label">Dirección</div><div class="item-value">${direccion}, ${ciudad}</div></div>
     <div class="item"><div class="item-label">Fecha</div><div class="item-value">${fecha}</div></div>
     <div class="item"><div class="item-label">Paneles</div><div class="item-value">${panelesHTML}</div></div>
-    <div class="item"><div class="item-label">Techo</div><div class="item-value">${roofType.name}</div></div>
+    <div class="item item--wide"><div class="item-label">Techo</div><div class="item-value">${roofType.name}</div></div>
     <div class="item"><div class="item-label">Posición</div><div class="item-value">${data.posicion === 'portrait' ? 'Portrait' : 'Landscape'}</div></div>
   `;
 
