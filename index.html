@@ -77,6 +77,46 @@
     outline: none;
     border-color: var(--blue);
   }
+
+  /* Custom dropdowns — identical on every browser/OS (native <select> replaced) */
+  .dropdown { position: relative; width: 100%; }
+  .dropdown-toggle {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    background: var(--white);
+    font-size: 13px; font-family: inherit; color: var(--text);
+    text-align: left; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .dropdown-toggle:focus { outline: none; border-color: var(--blue); }
+  .dropdown.open .dropdown-toggle { border-color: var(--blue); }
+  .dropdown-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dropdown-caret {
+    flex-shrink: 0; width: 7px; height: 7px;
+    border-right: 2px solid var(--gray); border-bottom: 2px solid var(--gray);
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 0.2s;
+  }
+  .dropdown.open .dropdown-caret { transform: rotate(-135deg) translateY(1px); }
+  .dropdown-menu {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    margin: 0; padding: 4px; list-style: none;
+    background: var(--white);
+    border: 1.5px solid var(--border); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    z-index: 50; max-height: 260px; overflow-y: auto;
+    display: none;
+  }
+  .dropdown.open .dropdown-menu { display: block; }
+  .dropdown-option {
+    padding: 8px 10px; border-radius: 4px;
+    font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.35;
+  }
+  .dropdown-option:hover, .dropdown-option:focus { background: var(--accent-subtle); outline: none; }
+  .dropdown-option.is-selected { background: var(--blue); color: #fff; font-weight: 600; }
   .section-divider {
     grid-column: 1 / -1;
     border-top: 1px solid #eee;
@@ -163,6 +203,25 @@
     overflow: hidden;
   }
   .report.visible { display: block; }
+
+  /* Off-DOM layout used only while rendering the downloadable PDF.
+     Fixed Letter box (8.5x11in @ 96dpi = 816x1056px) so the exported PDF is
+     identical on every browser/device — no print-dialog margins or scaling.
+     The image section flexes to fill the free space, footer sits at the bottom. */
+  .report.pdf-capture {
+    display: flex !important;
+    flex-direction: column;
+    width: 816px;
+    max-width: 816px;
+    height: 1056px;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+  }
+  .report.pdf-capture .report-body { flex: 0 0 auto; }
+  .report.pdf-capture .report-layout { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  .report.pdf-capture .report-layout img { flex: 1 1 auto; min-height: 0.9in; max-height: none; width: auto; max-width: 100%; object-fit: contain; align-self: center; }
 
   /* Header */
   .report-header {
@@ -467,21 +526,35 @@
     </div>
     <div class="input-group">
       <label>Posicionamiento</label>
-      <select id="posicion">
-        <option value="portrait">Portrait (vertical)</option>
-        <option value="landscape">Landscape (horizontal)</option>
-      </select>
+      <div class="dropdown" data-for="posicion">
+        <button type="button" class="dropdown-toggle" aria-haspopup="listbox" aria-expanded="false">
+          <span class="dropdown-label">Portrait (vertical)</span>
+          <span class="dropdown-caret" aria-hidden="true"></span>
+        </button>
+        <ul class="dropdown-menu" role="listbox">
+          <li class="dropdown-option is-selected" data-value="portrait" role="option">Portrait (vertical)</li>
+          <li class="dropdown-option" data-value="landscape" role="option">Landscape (horizontal)</li>
+        </ul>
+      </div>
+      <input type="hidden" id="posicion" value="portrait">
     </div>
     <div class="input-group">
       <label>Tipo de Techo</label>
-      <select id="techo">
-        <option value="teja">Teja Espa&ntilde;ola (S Tile)</option>
-        <option value="lfeet">L-Feet (Metal corrugado/trapezoidal con estructura de acero)</option>
-        <option value="trap_madera">Trapezoidal con estructura de Madera</option>
-        <option value="trap_acero">Trapezoidal con estructura de Acero</option>
-        <option value="galvanizada" selected>L&aacute;mina Galvanizada (Standing Seam)</option>
-        <option value="concreto">Concreto (Tri&aacute;ngulo ajustable)</option>
-      </select>
+      <div class="dropdown" data-for="techo">
+        <button type="button" class="dropdown-toggle" aria-haspopup="listbox" aria-expanded="false">
+          <span class="dropdown-label">L&aacute;mina Galvanizada (Standing Seam)</span>
+          <span class="dropdown-caret" aria-hidden="true"></span>
+        </button>
+        <ul class="dropdown-menu" role="listbox">
+          <li class="dropdown-option" data-value="teja" role="option">Teja Espa&ntilde;ola (S Tile)</li>
+          <li class="dropdown-option" data-value="lfeet" role="option">L-Feet (Metal corrugado/trapezoidal con estructura de acero)</li>
+          <li class="dropdown-option" data-value="trap_madera" role="option">Trapezoidal con estructura de Madera</li>
+          <li class="dropdown-option" data-value="trap_acero" role="option">Trapezoidal con estructura de Acero</li>
+          <li class="dropdown-option is-selected" data-value="galvanizada" role="option">L&aacute;mina Galvanizada (Standing Seam)</li>
+          <li class="dropdown-option" data-value="concreto" role="option">Concreto (Tri&aacute;ngulo ajustable)</li>
+        </ul>
+      </div>
+      <input type="hidden" id="techo" value="galvanizada">
     </div>
 
     <div class="input-group" style="grid-column: 1 / -1;">
@@ -495,7 +568,7 @@
 
     <div id="formError" class="form-error" hidden></div>
     <button class="btn-generate" onclick="generateReport()">GENERAR REPORTE</button>
-    <button class="btn-print" id="btnPrint" onclick="window.print()">IMPRIMIR / GUARDAR PDF (Ctrl + P)</button>
+    <button class="btn-print" id="btnPrint" onclick="downloadPDF()">DESCARGAR PDF</button>
   </div>
 </div>
 
@@ -545,6 +618,9 @@
   </div>
 </div>
 
+<!-- PDF generation libs: deterministic, browser-independent export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ===== PRODUCT IMAGES (auto-generated) =====
 const PRODUCT_IMAGES = {
@@ -920,6 +996,94 @@ function generateReport() {
   document.getElementById('btnPrint').style.display = 'block';
   document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
 }
+
+// ===== DETERMINISTIC PDF EXPORT =====
+// Renders the report into a fixed Letter-size canvas and emits a one-page PDF.
+// Independent of the browser's print dialog (margins/headers/scaling), so the
+// output is identical on Chrome, Safari, Firefox and Edge, on any device.
+async function downloadPDF() {
+  const btn = document.getElementById('btnPrint');
+  const report = document.getElementById('report');
+  if (!report.classList.contains('visible')) generateReport();
+  if (typeof html2canvas === 'undefined' || !window.jspdf) {
+    btn.textContent = 'Sin conexión — reintentar';
+    return;
+  }
+  const label = 'DESCARGAR PDF';
+  btn.disabled = true;
+  btn.textContent = 'Generando PDF…';
+  try {
+    const canvas = await html2canvas(report, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      width: 816,
+      height: 1056,
+      windowWidth: 816,
+      imageTimeout: 0,
+      onclone: doc => doc.getElementById('report').classList.add('pdf-capture'),
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const pdf = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' });
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    pdf.addImage(imgData, 'JPEG', 0, 0, pw, ph);
+    const cliente = (document.getElementById('cliente').value || 'Meico Solar').trim();
+    pdf.save(`Lista de Materiales - ${cliente}.pdf`);
+    btn.textContent = label;
+  } catch (e) {
+    console.error('PDF export failed', e);
+    btn.textContent = 'Error al generar — reintentar';
+  } finally {
+    btn.disabled = false;
+  }
+}
+// ===== END PDF EXPORT =====
+
+// ===== CUSTOM DROPDOWNS =====
+// Replace native <select> so the look is identical on every browser/OS.
+// Each dropdown writes its value into a hidden <input> with the same id, so
+// the rest of the app keeps reading document.getElementById(id).value.
+function initDropdowns() {
+  const all = [...document.querySelectorAll('.dropdown')];
+  const closeAll = except => all.forEach(d => {
+    if (d === except) return;
+    d.classList.remove('open');
+    d.querySelector('.dropdown-toggle').setAttribute('aria-expanded', 'false');
+  });
+  all.forEach(dd => {
+    const toggle = dd.querySelector('.dropdown-toggle');
+    const label = dd.querySelector('.dropdown-label');
+    const options = [...dd.querySelectorAll('.dropdown-option')];
+    const input = document.getElementById(dd.dataset.for);
+    const open = () => { closeAll(dd); dd.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); };
+    const close = () => { dd.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+    const choose = opt => {
+      input.value = opt.dataset.value;
+      label.textContent = opt.textContent;
+      options.forEach(o => o.classList.toggle('is-selected', o === opt));
+      close();
+    };
+    toggle.addEventListener('click', e => { e.stopPropagation(); dd.classList.contains('open') ? close() : open(); });
+    toggle.addEventListener('keydown', e => {
+      if (['ArrowDown', 'Enter', ' '].includes(e.key)) {
+        e.preventDefault(); open();
+        (dd.querySelector('.dropdown-option.is-selected') || options[0]).focus();
+      } else if (e.key === 'Escape') close();
+    });
+    options.forEach((opt, i) => {
+      opt.tabIndex = -1;
+      opt.addEventListener('click', e => { e.stopPropagation(); choose(opt); toggle.focus(); });
+      opt.addEventListener('keydown', e => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); (options[i + 1] || options[0]).focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); (options[i - 1] || options[options.length - 1]).focus(); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(opt); toggle.focus(); }
+        else if (e.key === 'Escape') { close(); toggle.focus(); }
+      });
+    });
+  });
+  document.addEventListener('click', () => closeAll(null));
+}
+initDropdowns();
 
 // Set today's date
 document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
