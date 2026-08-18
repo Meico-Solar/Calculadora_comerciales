@@ -404,6 +404,12 @@
     line-height: 1.5;
   }
   .tech-card-info .specs strong { color: var(--text); font-weight: 600; }
+  .tech-card-info .name-link {
+    color: var(--blue);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .tech-card-info .name-link:hover { color: var(--blue-dark); }
 
   /* Project layout image */
   .report-layout:empty { display: none; }
@@ -428,11 +434,38 @@
     background: var(--blue);
     color: rgba(255,255,255,0.8);
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 7px;
     font-size: 8.5px;
     letter-spacing: 0.2px;
   }
+  .report-footer .footer-row { display: flex; justify-content: space-between; }
   .report-footer .brand { color: white; font-weight: 700; }
+
+  /* Agendamiento de capacitacion (compacto) */
+  .footer-support {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.22);
+  }
+  .footer-support .support-qr {
+    flex: 0 0 auto;
+    background: #fff;
+    padding: 3px;
+    border-radius: 3px;
+    line-height: 0;
+  }
+  .footer-support .support-qr img,
+  .footer-support .support-qr canvas {
+    display: block;
+    width: 44px;
+    height: 44px;
+  }
+  .footer-support .support-text { flex: 1 1 auto; line-height: 1.35; }
+  .footer-support .support-title { color: #fff; font-weight: 700; font-size: 9.5px; }
+  .footer-support .footer-book-link { color: #fff; text-decoration: underline; }
 
   /* ============ PRINT STYLES ============ */
   @media print {
@@ -613,14 +646,57 @@
   </div>
 
   <div class="report-footer">
-    <span><span class="brand">Meico Solar</span> &mdash; www.meicosolar.com</span>
-    <span>Estructuras de montaje solar</span>
+    <div class="footer-support">
+      <div class="support-qr"><img id="supportQr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAV4AAAFeCAIAAABCSeBNAAAHIElEQVR4nO3dwY0jNxBAUa/hLByE8w/DQTgO+Wzgg/KCw2W15r3rQFJ3S/PBQ4H88Xq9fgP4r99vXwAwkTQAQRqAIA1AkAYgSAMQpAEI0gAEaQDCH+s///nnX7/mOn6Zf/75+9A77zyr9VWde+e17/a5a9/tf8GqAQjSAARpAII0AEEagCANQJAGIEgDEKQBCG+mIdfOTZ7t2JlaW792fb/nnsbnTfjtPOeZU4mf979g1QAEaQCCNABBGoAgDUCQBiBIAxCkAQjSAIStaci1c1NrtybPzs3wndtJceedb13VrXnWc574v2DVAARpAII0AEEagCANQJAGIEgDEKQBCNIAhIPTkN/NE2cld167s1PmrfudOSs5k1UDEKQBCNIABGkAgjQAQRqAIA1AkAYgSAMQTEP+x7kZvnNTiec88cTqNfOO/59VAxCkAQjSAARpAII0AEEagCANQJAGIEgDEA5OQ37e5Nm5U6dnzjuee+3aztO4tSfl2hP/F6wagCANQJAGIEgDEKQBCNIABGkAgjQAQRqAsDUN+cTdAddmnnZ9a8fKJ772lplXtcOqAQjSAARpAII0AEEagCANQJAGIEgDEKQBCG+mIZ+4p90Tzdxnce2JM4sz98KcyaoBCNIABGkAgjQAQRqAIA1AkAYgSAMQpAEIb6Yhb50svOOJ17x27uToc5+7dutbmHlHM6/KqgEI0gAEaQCCNABBGoAgDUCQBiBIAxCkAQgH94Y8N8P3xDOpb3niNe+Yeb8zd8pcs2oAgjQAQRqAIA1AkAYgSAMQpAEI0gAEaQDCm2nItXOTZzvTYztXde61a0+cSpw5Kbvzube+hZlnjls1AEEagCANQJAGIEgDEKQBCNIABGkAgjQA4cfr9brywbfm0m7NO57zeftZ3jLz+93hpGzgi0kDEKQBCNIABGkAgjQAQRqAIA1AkAYgXNsbcua84zkz5yyfOJN6zq19Q2c+Z6sGIEgDEKQBCNIABGkAgjQAQRqAIA1AkAYgvNkb8rudaDxz58hb04G37mjm3OHM/4UdpiGBnyYNQJAGIEgDEKQBCNIABGkAgjQAQRqAsDUNeW460CTl//fEGc2Z39GOmXt/Oikb+GLSAARpAII0AEEagCANQJAGIEgDEKQBCG9Oyj43l3brnWee0bw281u4Ne26NnPeceYsrL0hgZ8mDUCQBiBIAxCkAQjSAARpAII0AEEagPBmb8hzvttuiOfcOhv6iVOn3+1XZxoS+GLSAARpAII0AEEagCANQJAGIEgDEKQBCAdPyl574qTdzP3/1m6d0XzOrd/GrXdeO/drt2oAgjQAQRqAIA1AkAYgSAMQpAEI0gAEaQDCwZOyb807frezkmeeszxzCnPnjmZO6K7ZGxL4YtIABGkAgjQAQRqAIA1AkAYgSAMQpAEIb6Yh185NgJ177cwpvbVz1zxzhm/m7o9rt351597ZqgEI0gAEaQCCNABBGoAgDUCQBiBIAxCkAQhvpiGfOIc3c1ru804GX7s1SXnOE3ck3WHVAARpAII0AEEagCANQJAGIEgDEKQBCNIAhK29IW+ds3zuROO1mfe7dut+Z54b/sQZzVt3ZNUABGkAgjQAQRqAIA1AkAYgSAMQpAEI0gCErWnIHU88O3jmHo1P3Bty5uTo2sxztM89DasGIEgDEKQBCNIABGkAgjQAQRqAIA1AkAYgXJuGXNuZ4po5D7fj1o6GM88rnzkrOXPXyZ2nYdUABGkAgjQAQRqAIA1AkAYgSAMQpAEI0gCEH6/Xa/Hnc/vhrd06Z9k1/5p3Xvu8edYdt6Y/rRqAIA1AkAYgSAMQpAEI0gAEaQCCNABBGoDwZhryu3nidODMd94x8znvuHUyuL0hgS8mDUCQBiBIAxCkAQjSAARpAII0AEEagPDmpOwn7qW3tp4AmzmHd24e7omzg7fcOoN7h70hgS8mDUCQBiBIAxCkAQjSAARpAII0AEEagPBmGnJt5gTYzFm6mfsOnvvctZkzqWszn6STsoFfShqAIA1AkAYgSAMQpAEI0gAEaQCCNABhaxpy7YlzaWu3ptZm3u8Tr+rcTpnnnJsNdVI28NOkAQjSAARpAII0AEEagCANQJAGIEgDEA5OQ343M6cDP+9zd+YdZ37uzL0wrRqAIA1AkAYgSAMQpAEI0gAEaQCCNABBGoBgGvIn3JrDW9u5qs87v3vm09hx63dl1QAEaQCCNABBGoAgDUCQBiBIAxCkAQjSAISD05AzZ8t2nNv/b+YZzTtmzlnO/E3e2ldyzaoBCNIABGkAgjQAQRqAIA1AkAYgSAMQpAEIW9OQnzfDd+6Odmb41q994jXfmpVce+KOleees1UDEKQBCNIABGkAgjQAQRqAIA1AkAYgSAMQfrxer9vXAIxj1QAEaQCCNABBGoAgDUCQBiBIAxCkAQjSAIR/ATeg+JQCXkZGAAAAAElFTkSuQmCC" alt="QR agendar capacitacion"></div>
+      <div class="support-text">
+        <div class="support-title">&iquest;Necesitas capacitaci&oacute;n sobre tu producto?</div>
+        <span>Agenda con nuestro equipo de soporte &mdash; escanea el QR o ingresa a:</span><br>
+        <a class="footer-book-link" id="bookLink" href="#" target="_blank" rel="noopener">enlace de agendamiento</a>
+      </div>
+    </div>
+    <div class="footer-row">
+      <span><span class="brand">Meico Solar</span> &mdash; www.meicosolar.com</span>
+      <span>Estructuras de montaje solar</span>
+    </div>
   </div>
 </div>
 
 <!-- PDF generation libs: deterministic, browser-independent export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ===== LINK DE AGENDAMIENTO (Bookings) =====
+// Si el link cambia, actualiza esta linea. El codigo QR es una imagen fija
+// (esta mas abajo, en el pie); si cambias el link, pideme que regenere el QR.
+const BOOKING_URL = "https://outlook.office.com/book/EquipoSoporte@meico.com.co/";
+// Texto visible del enlace (la URL sin "https://" para que se lea y se pueda escribir)
+const BOOKING_URL_LABEL = BOOKING_URL.replace(/^https?:\/\//, "").replace(/\/$/, "");
+(function () {
+  const link = document.getElementById('bookLink');
+  if (link) { link.href = BOOKING_URL; link.textContent = BOOKING_URL_LABEL; }
+})();
+
+// ===== FICHAS TECNICAS POR COMPONENTE =====
+// Un link por componente. Para cambiar/agregar una ficha, edita solo la URL de aqui.
+// Las claves corresponden a cada pieza del catalogo (NO cambiar las claves):
+//   rail, splice, midClamp, endClamp, grounding  -> piezas fijas
+//   teja, lfeet, trap_madera, trap_acero, galvanizada, concreto -> pieza segun tipo de techo
+//   triangleKit -> Kit Fijacion Triangulo (pendiente; dejar "" mientras no haya ficha)
+const FICHAS = {
+  rail:        "https://drive.google.com/file/d/136VUPffatY9NpyTXucRMQTwWMRocuDcz/view?usp=sharing", // Riel 4700
+  splice:      "https://drive.google.com/file/d/1Ml_gFdfmCH9wRSq-yPowyIVmG-5fS2bz/view?usp=sharing", // Conector de Riel
+  midClamp:    "https://drive.google.com/file/d/1NEXeziuJT8J5DtFAs3iS6l9tZtoo7J5O/view?usp=sharing", // Grapa Intermedia
+  endClamp:    "https://drive.google.com/file/d/1tHaFC6zVEmXW3GNAstJ7NjJueCmHlKIS/view?usp=sharing", // Grapa Final
+  grounding:   "https://drive.google.com/file/d/14DbLE6JDq3aQdYRMAsxyt6F1FwNvk53j/view?usp=sharing", // Puesta a Tierra
+  teja:        "https://drive.google.com/file/d/1iXUBPd04SuZr3uq8EzCB8Z_-8T_AC20H/view?usp=sharing", // Gancho para Teja
+  lfeet:       "https://drive.google.com/file/d/1i9IbjA6dPBLZey3sY7G7zN3_ty5Kapp3/view?usp=sharing", // L-Feet 85mm
+  trap_madera: "https://drive.google.com/file/d/1FQGLygkUy6H5TXAQyU6RLlYBcjvBUBlD/view?usp=sharing", // L-Feet + Hangerbolt
+  trap_acero:  "https://drive.google.com/file/d/1m-xVa1_17VoeTeyNqKPSUehieUGNZvnY/view?usp=sharing", // L-Feet + Self-lock
+  galvanizada: "https://drive.google.com/file/d/1x5PRThWQO32AUoGLVMprL3F8yTRYKNgT/view?usp=sharing", // Standing Seam Clamp
+  concreto:    "https://drive.google.com/file/d/1BpyP4gDQ0QSoZ3Du8FhZ2vx4gzBsmgaT/view?usp=sharing", // Triangulo Ajustable
+  triangleKit: "" // Kit Fijacion Triangulo -> pendiente de link
+};
+</script>
 <script>
 // ===== PRODUCT IMAGES (auto-generated) =====
 const PRODUCT_IMAGES = {
@@ -973,11 +1049,16 @@ function generateReport() {
     for (const [k, v] of Object.entries(piece.specs)) {
       specsHTML += `<strong>${k}:</strong> ${v}<br>`;
     }
+    // El nombre del componente es el hipervinculo a su ficha tecnica (si existe)
+    const fichaUrl = FICHAS[imgKey];
+    const nameHTML = fichaUrl
+      ? `<a class="name-link" href="${fichaUrl}" target="_blank" rel="noopener">${piece.name}</a>`
+      : piece.name;
     techHTML += `
       <div class="tech-card">
         <div class="tech-card-img">${imgHTML}</div>
         <div class="tech-card-info">
-          <div class="name">${piece.name}</div>
+          <div class="name">${nameHTML}</div>
           <div class="specs">${specsHTML}</div>
         </div>
       </div>
@@ -1013,6 +1094,34 @@ async function downloadPDF() {
   btn.disabled = true;
   btn.textContent = 'Generando PDF…';
   try {
+    // Medir la posicion de los enlaces usando EXACTAMENTE el mismo layout que se
+    // captura (clase pdf-capture => 816x1056). Se aplica y se remueve de forma
+    // sincrona (sin repintar en pantalla) para que las zonas clickeables del PDF
+    // coincidan pixel a pixel con lo que se dibuja. Antes se median a 720px (ancho
+    // en pantalla) y por eso los links quedaban corridos y no abrian.
+    const linkRects = [];
+    (function measureLinks() {
+      const hadCapture = report.classList.contains('pdf-capture');
+      report.classList.add('pdf-capture');
+      const repRect = report.getBoundingClientRect();
+      const collect = (el, url) => {
+        if (!url || url === '#') return;
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        linkRects.push({
+          url,
+          fx: (r.left - repRect.left) / repRect.width,
+          fy: (r.top  - repRect.top)  / repRect.height,
+          fw: r.width  / repRect.width,
+          fh: r.height / repRect.height,
+        });
+      };
+      const support = report.querySelector('.footer-support');
+      if (support) collect(support, BOOKING_URL);
+      report.querySelectorAll('.name-link').forEach(a => collect(a, a.getAttribute('href')));
+      if (!hadCapture) report.classList.remove('pdf-capture');
+    })();
+
     const canvas = await html2canvas(report, {
       scale: 2,
       backgroundColor: '#ffffff',
@@ -1027,6 +1136,13 @@ async function downloadPDF() {
     const pw = pdf.internal.pageSize.getWidth();
     const ph = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, 'JPEG', 0, 0, pw, ph);
+
+    // Aplicar los enlaces clickeables (nombre del componente -> ficha; pie -> agendamiento)
+    linkRects.forEach(l => {
+      try { pdf.link(l.fx * pw, l.fy * ph, l.fw * pw, l.fh * ph, { url: l.url }); }
+      catch (linkErr) { console.warn('No se pudo agregar un link', linkErr); }
+    });
+
     const cliente = (document.getElementById('cliente').value || 'Meico Solar').trim();
     pdf.save(`Lista de Materiales - ${cliente}.pdf`);
     btn.textContent = label;
